@@ -15,11 +15,7 @@ $dotenv->load();
 $controller = new Borg\Controller(APP_ROOT.'/views/'); // pretty sweet class name
 switch (getenv('REQUEST_URI')) {
   case '/':
-    $response = $controller->homeAction();
-    break;
-  case '/api/borgz':
-    // show all the borgz
-    $response = $controller->listAction($_GET);
+    $response = $controller->homeAction($_GET);
     break;
   default:
     $response = 'This page is irrelevant. Assimilate now.';
