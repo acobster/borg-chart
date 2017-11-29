@@ -1,0 +1,11 @@
+name: borg-chart
+recipe: lamp
+config:
+  php: 7.1
+  webroot: html
+  conf:
+    server: config/httpd.conf
+
+tooling:
+  test:
+    - appserver: cd $LANDO_MOUNT && vendor/bin/phpunit

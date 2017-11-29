@@ -1,0 +1,21 @@
+{
+    "name": "acobster/borg-chart",
+    "description": "Resisting the corporate hierarchy is futile.",
+    "type": "project",
+    "require": {
+        "vlucas/phpdotenv": "^2.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^6.4"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Coby Tamayo",
+            "email": "coby.tamayo@gmail.com"
+        }
+    ],
+    "autoload": {
+      "psr-4": {"Borg\\": "src/Borg/"}
+    }
+}
