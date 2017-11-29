@@ -11,6 +11,10 @@
         <p><?= implode(',', $employee) ?></p>
       <?php endforeach; ?>
 
+      <?php if (empty($v['employees'])) : ?>
+        <p>No employees found</p>
+      <?php endif; ?>
+
       <noscript>Sorting will not work without JavaScript.</noscript>
     </main>
   </body>

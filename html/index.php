@@ -13,7 +13,9 @@ $dotenv->load();
 // FIXME normally this would be handled by a proper router/dispatcher,
 // e.g. Alto or symfony/routing...good enough for rock 'n' roll.
 $controller = new Borg\Controller(APP_ROOT.'/views/'); // pretty sweet class name
-switch (getenv('REQUEST_URI')) {
+// remove the query string
+$route = preg_replace('/\?.*$/', '', getenv('REQUEST_URI'));
+switch ($route) {
   case '/':
     $response = $controller->homeAction($_GET);
     break;

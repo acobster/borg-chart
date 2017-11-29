@@ -23,7 +23,7 @@ class DbConnection {
 
   public function query(string $sql, array $params = []) {
     $statement = $this->connection->prepare($sql);
-    $statement->execute();
+    $statement->execute($params);
     return $statement->fetchAll();
   }
 }
