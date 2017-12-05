@@ -89,7 +89,12 @@ class Employee {
 
     // WHERE depends on whether we have a search param
     $whereClause = $search ? 'WHERE name LIKE :search' : '';
-    $sql = "SELECT * FROM employees {$whereClause}";
+    $sql = <<<_SQL_
+SELECT e.*, boss.name boss_name
+FROM employees e
+JOIN employees boss ON(e.bossId = boss.id)
+{$whereClause}
+_SQL_;
 
     // Normally you'd get this from some kind service/container...
     // instantiating stuff directly means ~*! coupling !*~
