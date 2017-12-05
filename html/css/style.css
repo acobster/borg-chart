@@ -13,3 +13,31 @@ main {
 h1 {
   text-align: center;
 }
+
+
+.sortable {
+  position: relative;
+  opacity: 0.5;
+  cursor: wait;
+}
+.sortable:before {
+  content: "LOADING...";
+  display: block;
+  position: absolute;
+  font-size: 5em;
+  text-align: center;
+  margin: 1em auto;
+  width: 100%;
+
+  font-family: Helvetica, sans-serif;
+  font-weight: bold;
+  color: #009cff80;
+}
+.sortable.dataTable {
+  opacity: 1;
+  cursor: initial;
+}
+.sortable.dataTable:before {
+  content: "";
+  display: none;
+}

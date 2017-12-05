@@ -13,10 +13,14 @@
 
       <?php if (!empty($v['employees'])) : ?>
 
-        <table id="borg-employees">
-          <th>Employee Name</th>
-          <th>Boss Name</th>
-          <th>Distance from CEO</th>
+        <table id="borg-employees" class="sortable">
+          <thead>
+            <tr>
+              <th>Employee Name</th>
+              <th>Boss Name</th>
+              <th>Distance from CEO</th>
+            </tr>
+          </thead>
 
           <?php foreach ($v['employees'] as $employee) : ?>
             <tr>
@@ -33,5 +37,14 @@
 
       <noscript>Sorting will not work without JavaScript.</noscript>
     </main>
+
+    <!--  NOTE: normally here I would bundle assets with NPM/Grunt,
+          and serve it all minified together. CDNs will do for now. -->
+    <script
+        src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.js"></script>
+    <script src="/js/borg-chart.js"></script>
   </body>
 </html>
