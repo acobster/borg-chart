@@ -7,15 +7,42 @@ use Predis;
 class Employee {
   const DISTANCE_CACHE_HANDLE = 'all_distances';
 
-  public static function getAllWithDistances(array $filters = []) {
-    // get the distance for each employee
-    $distances = static::fetchDistances();
+  /**
+   * Redis cache client instance
+   * @var Predis\Client
+   */
+  protected static $redis;
 
-    // get the filtered employees along with the distance for each
-    return array_map(function(array $employee) use($distances) {
-      $employee['distance'] = $distances[$employee['id']];
-      return $employee;
-    }, static::fetch($filters));
+  public static function getAllWithDistances(array $filters = []) {
+    //DataTables gets us search for free, so we can disable it here
+    //$handle = 'employees?' . urldecode(http_build_query($filters));
+    $handle = 'employees?';
+
+    $redis = static::getRedis();
+
+    $all = $redis->get($handle);
+
+    if (empty($all)) {
+      // get the distance for each employee
+      $distances = static::fetchDistances();
+
+      // get the filtered employees along with the distance for each
+      $all = array_map(function(array $employee) use($distances) {
+        $employee['distance'] = $distances[$employee['id']];
+        return $employee;
+      }, static::fetch($filters));
+
+      // set cache for next time
+      $redis->set($handle, serialize($all));
+    } else {
+      $all = unserialize($all);
+
+      if (!$all) {
+        throw new \RuntimeException('Bad employee data retrieved from Redis');
+      }
+    }
+
+    return $all;
   }
 
   /**
@@ -105,12 +132,7 @@ _SQL_;
   }
 
   protected static function fetchDistances() {
-    // another instance of where we'd outsource to a service instead of
-    // instantiating directly. Rock 'n' roll, etc.
-    $redis = new Predis\Client([
-      'host' => getenv('REDIS_HOST'),
-      'port' => getenv('REDIS_PORT'),
-    ]);
+    $redis = static::getRedis();
 
     $distances = $redis->get(static::DISTANCE_CACHE_HANDLE);
 
@@ -132,6 +154,19 @@ _SQL_;
     }
 
     return $distances;
+  }
+
+  protected static function getRedis() {
+    // another instance of where we'd outsource to a service instead of
+    // instantiating directly. Rock 'n' roll, etc.
+    if (!static::$redis) {
+      static::$redis = new Predis\Client([
+        'host' => getenv('REDIS_HOST'),
+        'port' => getenv('REDIS_PORT'),
+      ]);
+    }
+
+    return static::$redis;
   }
 }
 

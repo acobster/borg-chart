@@ -22,10 +22,7 @@ class Controller {
    * @return string the HTML to render
    */
   public function homeAction(array $params) {
-    $whitelist = ['s']; // this provides a simple way to support more params
-    $whitelistedParams = array_intersect_key($params, array_flip($whitelist));
-
-    $employees = Employee::getAllWithDistances($whitelistedParams);
+    $employees = Employee::getAllWithDistances();
     return $this->render('home.php', ['employees' => $employees]);
   }
 
