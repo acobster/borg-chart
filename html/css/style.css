@@ -1,0 +1,15 @@
+body {
+  /* Helvetica is so 2007 */
+  font-family: Palatino, serif;
+  font-size: 16px;
+}
+
+main {
+  max-width: 90%;
+  width: 50em;
+  margin: 2em auto;
+}
+
+h1 {
+  text-align: center;
+}
