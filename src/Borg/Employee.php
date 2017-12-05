@@ -121,6 +121,9 @@ class Employee {
       // cache miss: compute and store for next time
       $distances = static::computeEmployeeDistances(static::fetch([]));
       $redis->set(static::DISTANCE_CACHE_HANDLE, serialize($distances));
+
+      // NOTE: for this to work reliably, we'd have to update/bust the cache
+      // whenever an employee's distance changes.
     }
 
     return $distances;
