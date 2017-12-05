@@ -8,7 +8,7 @@ require APP_ROOT.'/vendor/autoload.php';
 
 // parse variables from .env
 $dotenv = new Dotenv(APP_ROOT);
-$dotenv->load();
+$dotenv->overload();
 
 // FIXME normally this would be handled by a proper router/dispatcher,
 // e.g. Alto or symfony/routing...good enough for rock 'n' roll.
