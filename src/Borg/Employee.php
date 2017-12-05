@@ -2,31 +2,20 @@
 
 namespace Borg;
 
+use Predis;
+
 class Employee {
-  /**
-   * Fetch all employees from the database
-   * @param array $filters an array with any of the following keys:
-   * * s - search param, used to filter employees by name
-   * @return array and array of Employee objects
-   */
-  public static function getAll(array $filters) {
-    $search = (string) ($filters['s'] ?? '');
+  const DISTANCE_CACHE_HANDLE = 'all_distances';
 
-    // WHERE depends on whether we have a search param
-    $whereClause = $search ? 'WHERE name LIKE :search' : '';
-    $sql = "SELECT * FROM employees {$whereClause}";
-
-    // Normally you'd get this from some kind service/container...
-    // instantiating stuff directly means ~*! coupling !*~
-    $connection = new DbConnection();
-    $results = $connection->query($sql, [':search' => "%{$search}%"]);
-
-    return $results;
-  }
-
-  public static function getAllWithDistances(array $filters) {
+  public static function getAllWithDistances(array $filters = []) {
     // get the distance for each employee
-    return static::computeEmployeeDistances($results);
+    $distances = static::fetchDistances();
+
+    // get the filtered employees along with the distance for each
+    return array_map(function(array $employee) use($distances) {
+      $employee['distance'] = $distances[$employee['id']];
+      return $employee;
+    }, static::fetch($filters));
   }
 
   /**
@@ -72,13 +61,69 @@ class Employee {
           // climb the corporate ladder one rung
           $distanceTraversed++;
           $higherUp = $employees[$higherUp['bossId']];
+
+          // FIXME if we really wanted, we could optimize this even further, e.g. by storing
+          // each $higherUp in a stack and storing their distances as we compute them,
+          // to avoid redundant computations!
         }
       }
 
       return $employee;
     }, $employees);
 
-    return array_values($employees);
+    // finally, extract just the distance from each employee array
+    return array_map(function(array $employee) {
+      return $employee['distance'];
+    }, $employees);
+  }
+
+
+  /**
+   * Fetch all employees from the database
+   * @param array $filters an array with any of the following keys:
+   * * s - search param, used to filter employees by name
+   * @return array and array of Employee objects
+   */
+  protected static function fetch(array $filters) {
+    $search = (string) ($filters['s'] ?? '');
+
+    // WHERE depends on whether we have a search param
+    $whereClause = $search ? 'WHERE name LIKE :search' : '';
+    $sql = "SELECT * FROM employees {$whereClause}";
+
+    // Normally you'd get this from some kind service/container...
+    // instantiating stuff directly means ~*! coupling !*~
+    $connection = new DbConnection();
+    $results = $connection->query($sql, [':search' => "%{$search}%"]);
+
+    return $results;
+  }
+
+  protected static function fetchDistances() {
+    // another instance of where we'd outsource to a service instead of
+    // instantiating directly. Rock 'n' roll, etc.
+    $redis = new Predis\Client([
+      'host' => getenv('REDIS_HOST'),
+      'port' => getenv('REDIS_PORT'),
+    ]);
+
+    $distances = $redis->get(static::DISTANCE_CACHE_HANDLE);
+
+    if ($distances) {
+      $distances = unserialize($distances);
+
+      // FIXME calling code would ordinarily handle this, e.g.
+      // with some logging/error reporting
+      if (empty($distances)) {
+        throw new \RuntimeException('Bad distance data retrieved from Redis');
+      }
+    } else {
+      // cache miss: compute and store for next time
+      $distances = static::computeEmployeeDistances(static::fetch([]));
+      $redis->set(static::DISTANCE_CACHE_HANDLE, serialize($distances));
+    }
+
+    return $distances;
   }
 }
 

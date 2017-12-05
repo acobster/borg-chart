@@ -6,6 +6,19 @@ config:
   conf:
     server: config/httpd.conf
 
+services:
+  appserver:
+    build:
+      - "cd $LANDO_MOUNT && composer install"
+  cache:
+    type: redis
+    persist: true
+
 tooling:
-  test:
-    - appserver: cd $LANDO_MOUNT && vendor/bin/phpunit
+  phpunit:
+    service: appserver
+    cmd: "cd $LANDO_MOUNT && vendor/bin/phpunit"
+    description: "Run phpunit tests"
+  redis-cli:
+    service: cache
+

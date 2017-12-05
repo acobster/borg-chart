@@ -25,7 +25,7 @@ class Controller {
     $whitelist = ['s']; // this provides a simple way to support more params
     $whitelistedParams = array_intersect_key($params, array_flip($whitelist));
 
-    $employees = Employee::getAll($whitelistedParams);
+    $employees = Employee::getAllWithDistances($whitelistedParams);
     return $this->render('home.php', ['employees' => $employees]);
   }
 
