@@ -41,3 +41,7 @@ h1 {
   content: "";
   display: none;
 }
+
+.dataTables_filter {
+  margin: 1em 0;
+}
