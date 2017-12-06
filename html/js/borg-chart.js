@@ -4,6 +4,8 @@
   // document ready callback
   $(function() {
     var $borgTable = $('#borg-employees').DataTable({
+      // disallow editing pagination length
+      lengthChange: false,
       // customize labelling
       oLanguage: { sSearch: 'Filter by employee name:' },
     })
