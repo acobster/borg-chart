@@ -32,5 +32,5 @@ This is a coding exercise and does almost nothing useful.
 git clone git@github.com:acobster/borg-chart.git
 cd borg-chart
 lando start
-lando import-db ./my-dump.sql
+lando db-import ./my-dump.sql
 ```
