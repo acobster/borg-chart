@@ -4,6 +4,10 @@ namespace Borg;
 
 use Predis;
 
+// FIXME one thing I'd fix about this design with more time is
+// a fully-fledged DistanceService, so we're not always passing
+// around data between static methods. I *do* think static methods
+// make sense for the model-level getAll* variety.
 class Employee {
   const DISTANCE_CACHE_HANDLE = 'all_distances';
 
@@ -13,6 +17,13 @@ class Employee {
    */
   protected static $redis;
 
+  /**
+   * Gets all employees as arrays, with `distances` indices set
+   * array $filters the filters to apply. This arg is a vestige of
+   * server-side search filtering, but I've developed an emotional
+   * attachment to it so I'm keeping it here.
+   * @return array[]
+   */
   public static function getAllWithDistances(array $filters = []) {
     //DataTables gets us search for free, so we can disable it here
     //$handle = 'employees?' . urldecode(http_build_query($filters));
