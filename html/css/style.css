@@ -45,3 +45,6 @@ h1 {
 .dataTables_filter {
   margin: 1em 0;
 }
+.dataTables_filter input {
+  margin-left: 1em;
+}
