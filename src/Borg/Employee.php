@@ -175,6 +175,7 @@ _SQL_;
         'host' => getenv('REDIS_HOST'),
         'port' => getenv('REDIS_PORT'),
       ]);
+      static::$redis->auth(getenv('REDIS_PASS'));
     }
 
     return static::$redis;
